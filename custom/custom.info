@@ -1,0 +1,6 @@
+name = Site api Key
+description = Custom module to add "site api key" in site configuration form.
+core = 7.x
+version = "7.x"
+project = "Custom"
+

@@ -1,0 +1,57 @@
+<?php
+
+/**
+ * @file
+ * This module provides a set of fields that can be used to store
+ * tabular data with a node. The implementation uses a custom CCK widget.
+ */
+
+/**
+ * @todo should we create a helper function for sanitization?
+ *  - we should see if it makes sense to sanitize on load as well as view
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function custom_menu() {
+  return array(
+    'page_json/%/%' => array(
+      'page callback' => 'tablefield_export_csv',
+      'page arguments' => array(1, 2),
+      'title' => 'Export Node Data in json format',
+      'access arguments' => array('export tablefield'),
+    ),
+  );
+}
+
+/**
+* @filesource
+* Implements hook_form_alter().
+*/
+
+function custom_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'system_site_information_settings') {
+    $form['siteapikey'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Site api key'),
+       //'#default_value' => variable_get('siteapikey', ''),
+      '#default_value' => !empty(variable_get('siteapikey')) ? variable_get('siteapikey') : 'No api key yet',
+    );
+  }
+
+// extra submit form handle
+  $form['#submit'][] = 'custom_form_submit';
+}
+
+
+// handle form submition 
+
+function custom_form_submit($form, &$form_state){
+    
+    $values = $form_state['values'];
+    
+    if(!empty($values['siteapikey'])){
+        variable_set('siteapikey', $values['siteapikey']);
+    }
+}
