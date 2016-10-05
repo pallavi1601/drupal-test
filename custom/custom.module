@@ -16,15 +16,47 @@
  */
 function custom_menu() {
   return array(
-    'page_json/%/%' => array(
-      'page callback' => 'tablefield_export_csv',
+    'page_json/%node/%' => array(
+      'page callback' => 'custom_page_json',
       'page arguments' => array(1, 2),
       'title' => 'Export Node Data in json format',
-      'access arguments' => array('export tablefield'),
+      'access arguments' => array('page json'),
     ),
   );
 }
 
+/**
+ * Implements hook_permission().
+ */
+function custom_permission() {
+  return array(
+    'page json' => array(
+      'title' => t('Export node Data as Json format'),
+    ),
+  );
+}
+
+
+/**
+ * Menu callback to export a table as a CSV.
+ *
+ * @param String $entity_id
+ *  The id of the entity.
+ * @param String $siteapikey
+ *  The machine name of the field to load.
+ */
+function custom_page_json($entity_id, $siteapikey) {
+  //$siteapikey = variable_get('siteapikey');
+  $node = node_load($entity_id);
+  if($node->type == 'page' && !empty($node) && $siteapikey == variable_get('siteapikey')) {
+    $output = drupal_json_encode($node);
+    print $output;
+  //  return $output;
+  }else{
+    drupal_access_denied();
+  }
+
+}
 /**
 * @filesource
 * Implements hook_form_alter().
@@ -38,6 +70,9 @@ function custom_form_alter(&$form, &$form_state, $form_id) {
        //'#default_value' => variable_get('siteapikey', ''),
       '#default_value' => !empty(variable_get('siteapikey')) ? variable_get('siteapikey') : 'No api key yet',
     );
+    if (!empty(variable_get('siteapikey'))) {
+      $form['actions']['submit']['#value'] = 'Update Configuration';
+      }
   }
 
 // extra submit form handle
