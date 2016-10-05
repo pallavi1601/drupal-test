@@ -1,17 +1,6 @@
 <?php
 
 /**
- * @file
- * This module provides a set of fields that can be used to store
- * tabular data with a node. The implementation uses a custom CCK widget.
- */
-
-/**
- * @todo should we create a helper function for sanitization?
- *  - we should see if it makes sense to sanitize on load as well as view
- */
-
-/**
  * Implements hook_menu().
  */
 function custom_menu() {
@@ -38,7 +27,7 @@ function custom_permission() {
 
 
 /**
- * Menu callback to export a table as a CSV.
+ * Menu callback to export a node as a Json format.
  *
  * @param String $entity_id
  *  The id of the entity.
@@ -46,7 +35,6 @@ function custom_permission() {
  *  The machine name of the field to load.
  */
 function custom_page_json($entity_id, $siteapikey) {
-  //$siteapikey = variable_get('siteapikey');
   $node = node_load($entity_id);
   if($node->type == 'page' && !empty($node) && $siteapikey == variable_get('siteapikey')) {
     $output = drupal_json_encode($node);
@@ -57,6 +45,7 @@ function custom_page_json($entity_id, $siteapikey) {
   }
 
 }
+
 /**
 * @filesource
 * Implements hook_form_alter().
@@ -67,7 +56,6 @@ function custom_form_alter(&$form, &$form_state, $form_id) {
     $form['siteapikey'] = array(
       '#type' => 'textfield',
       '#title' => t('Site api key'),
-       //'#default_value' => variable_get('siteapikey', ''),
       '#default_value' => !empty(variable_get('siteapikey')) ? variable_get('siteapikey') : 'No api key yet',
     );
     if (!empty(variable_get('siteapikey'))) {
